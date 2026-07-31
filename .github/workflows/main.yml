@@ -18,7 +18,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 只用官方Action，彻底删除所有手写wget/mkdir下载SDK代码！
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
