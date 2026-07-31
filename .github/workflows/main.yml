@@ -18,26 +18,27 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # 只用官方Action，彻底删除所有手写wget/mkdir下载SDK代码！
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install NDK
         run: sdkmanager "ndk;${{ env.NDK_VERSION }}"
 
-      - name: Pull SDL2 Source
+      - name: Fetch SDL2 Source
         run: |
           chmod +x ./fetch_sdl.sh
           ./fetch_sdl.sh
 
-      - name: Build Android APK
+      - name: Build APK
         run: |
           chmod +x ./build_android.sh
           ./build_android.sh
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: XP-Simulator-APK
+          name: XP-Sim-APK
           path: ./android/app/build/outputs/apk/release/app-release-unsigned.apk
 
 
@@ -47,10 +48,10 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Load MSVC Compiler
+      - name: MSVC Env
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install vcpkg & SDL2
+      - name: Prepare vcpkg & SDL2
         run: |
           git clone https://github.com/microsoft/vcpkg
           cd vcpkg
@@ -64,8 +65,8 @@ jobs:
           cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
           cmake --build . --config Release
 
-      - name: Upload Windows EXE
+      - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: XP-Simulator-Win64
+          name: XP-Sim-Win64
           path: build/Release/*.exe
