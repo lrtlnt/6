@@ -12,27 +12,29 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # JDK17 稳定安装
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # 使用成熟action安装Android SDK，抛弃手写shell（彻底解决exit code8）
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install NDK
         run: sdkmanager "ndk;${{ env.NDK_VERSION }}"
 
-      - name: Grant execute permission
-        run: chmod +x ./build_android.sh
+      - name: Pull SDL2 Source
+        run: |
+          chmod +x ./fetch_sdl.sh
+          ./fetch_sdl.sh
 
       - name: Build Android APK
-        run: ./build_android.sh
+        run: |
+          chmod +x ./build_android.sh
+          ./build_android.sh
 
-      - name: Upload compiled APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: XP-Simulator-APK
@@ -45,24 +47,24 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Load MSVC compiler
+      - name: Load MSVC Compiler
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install vcpkg + SDL2 libraries
+      - name: Install vcpkg & SDL2
         run: |
           git clone https://github.com/microsoft/vcpkg
           cd vcpkg
           .\bootstrap-vcpkg.bat
           .\vcpkg install sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows
 
-      - name: CMake Build Release
+      - name: CMake Build
         run: |
           mkdir build
           cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
           cmake --build . --config Release
 
-      - name: Upload Windows Executable
+      - name: Upload Windows EXE
         uses: actions/upload-artifact@v4
         with:
           name: XP-Simulator-Win64
