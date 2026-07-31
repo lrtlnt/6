@@ -47,10 +47,10 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: MSVC Env
+      - name: MSVC Environment
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Prepare vcpkg & SDL2
+      - name: Install SDL via vcpkg
         run: |
           git clone https://github.com/microsoft/vcpkg
           cd vcpkg
@@ -64,7 +64,7 @@ jobs:
           cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
           cmake --build . --config Release
 
-      - name: Upload EXE
+      - name: Upload Windows Executable
         uses: actions/upload-artifact@v4
         with:
           name: XP-Sim-Win64
